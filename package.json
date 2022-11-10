@@ -1,14 +1,18 @@
 {
-  "name": "typescript-boilerplate-2021",
-  "version": "0.4.2",
-  "description": "Boilerplate for TypeScript projects (Node.js and browser modules)",
-  "author": "Chris Hager <chris@linuxuser.at>",
-  "repository": "https://github.com/metachris/typescript-boilerplate",
+  "name": "juke-rocket",
+  "version": "1.0.0",
+  "description": "Simple Linux Jukebox with support for RFID reader to control playback.",
+  "author": "Taylor Brown <taytay@taytay.com>",
+  "repository": "https://github.com/taytay/juke-rocket",
   "license": "MIT",
   "keywords": [
-    "typescript",
-    "boilerplate",
-    "esbuild"
+    "PhonieBox",
+    "Raspberry Pi",
+    "Pi",
+    "jukebox",
+    "music",
+    "music box",
+    "RFID"
   ],
   "main": "./dist/tsc/main.js",
   "types": "./dist/tsc/main.d.ts",
@@ -42,7 +46,7 @@
     "jest": "27.0.0",
     "ts-jest": "^27.1.4",
     "ts-node": "^10.7.0",
-    "typedoc": "^0.22.15",
-    "typescript": "^4.6.3"
+    "typedoc": "0.23",
+    "typescript": "4.8.4"
   }
 }
