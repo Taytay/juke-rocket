@@ -1,90 +1,112 @@
 #!/usr/bin/env node
 //import { foo } from './main'
 import "jsh";
+import { DevInputReader } from "dev-input-reader";
 
-//import { Evdev, EvdevReader } from "evdev";
-import EvdevReader, { Evdev } from "evdev";
+// use simple events
+//const reader = new DevInputReader("event0", { retryInterval: 10000 });
 
-var reader = new EvdevReader({ raw: true });
-reader.search("/dev/input/by-path", "event-kbd", function (err, files) {
-  //Err should be null.
-  let device: Evdev.Device = {} as any;
-  //const target_index = parseInt(process.argv[3]); // don't forget to check if NaN
-  if (err) {
-    console.log("node-evdev search stream : ", err);
-    return;
-  } else if (files.length == 1) {
-    console.log("Opening %s", files[0]);
-    device = reader.open(files[0]);
-  }
-  // else if (1 < files.length) {
-  //   if (Number.isNaN(target_index)) {
-  //     console.log("Found %d files : %s", files.length, prettyPrint(files));
-  //     console.log(
-  //       'Provide a third argument "index" to choose your file. e.g. :'
-  //     );
-  //     console.log("\t./index.js %s 0", target_match);
-  //     console.log("Or provide a more precise filter to match only 1 device");
-  //     return;
-  //   } else if (!files[target_index]) {
-  //     console.error(
-  //       "No file at index %d : %s",
-  //       target_index,
-  //       prettyPrint(files)
-  //     );
-  //     return;
-  //   } else {
-  //     console.log("Opening : %s", files[target_index]);
-  //     device = reader.open(files[target_index]);
-  //   }
-  // } else {
-  //   console.log("No device matching %s found", target_match);
-  //   return;
-  // }
+const fullPathToDevice =
+  "/dev/input/by-path/platform-3f980000.usb-usb-0:1.1.3:1.0-event-kbd";
+const reader = new DevInputReader(fullPathToDevice, { retryInterval: 10000 });
 
-  //We don't check if device is assigned because any code path that does not return should assign it.
-  device.on("open", function () {
-    console.log(device.id);
-  });
-  const keys =
-    "X^1234567890XXXXqwertzuiopXXXXasdfghjklXXXXXyxcvbnmXXXXXXXXXXXXXXXXXXXXXXX";
-  // reader.on("EV_KEY", (event) => {
-  //   if (event.value == 1){
-  //     console.log(event);
-  //     console.log(keys[event.code]);
-  //   }
-  // });
+console.log("About to listen...");
 
-  type MyEvent = {
-    type: number;
-    code: number;
-    value: string | number;
-    time: string;
-  };
-  let currStr = "";
-  reader.on("event", (event: MyEvent) => {
-    //console.log(event);
-    if (event.type == 1 && event.value == 1) {
-      console.log(event);
-      console.log(keys[event.code]);
-      if (event.code != 28) {
-        currStr += keys[event.code];
-      } else {
-        console.log("Here is the string we got!", currStr);
-        currStr = "";
-      }
-    }
-  });
+reader
+  .on("error", console.error)
+  .on("event" as any, (data: any) => console.log("event:", data))
+  .on("keydown", (data) => console.log("keyDown:", data))
+  .on("key", (data) => console.log("key:", data))
+  .on("error", (data) => console.log("an error occure:", data));
+// data contain the durration of the press and the concurently press key
+// in case oh hardware lost, will reconnect every retryInterval 10sec
+console.log("Listening...");
 
-  //   while key != 'KEY_ENTER':
-  //           r, w, x = select([self.dev], [], [])
-  //           for event in self.dev.read():
-  //               if event.type == 1 and event.value == 1:
-  //                   stri += self.keys[event.code]
-  //                   # print( keys[ event.code ] )
-  //                   key = ecodes.KEY[event.code]
-  // });
-});
+// function works() {
+//   //import { Evdev, EvdevReader } from "evdev";
+//   import EvdevReader, { Evdev } from "evdev";
+
+//   var reader = new EvdevReader({ raw: true });
+//   reader.search("/dev/input/by-path", "event-kbd", function (err, files) {
+//     //Err should be null.
+//     let device: Evdev.Device = {} as any;
+//     //const target_index = parseInt(process.argv[3]); // don't forget to check if NaN
+//     if (err) {
+//       console.log("node-evdev search stream : ", err);
+//       return;
+//     } else if (files.length == 1) {
+//       console.log("Opening %s", files[0]);
+//       device = reader.open(files[0]);
+//     }
+//     // else if (1 < files.length) {
+//     //   if (Number.isNaN(target_index)) {
+//     //     console.log("Found %d files : %s", files.length, prettyPrint(files));
+//     //     console.log(
+//     //       'Provide a third argument "index" to choose your file. e.g. :'
+//     //     );
+//     //     console.log("\t./index.js %s 0", target_match);
+//     //     console.log("Or provide a more precise filter to match only 1 device");
+//     //     return;
+//     //   } else if (!files[target_index]) {
+//     //     console.error(
+//     //       "No file at index %d : %s",
+//     //       target_index,
+//     //       prettyPrint(files)
+//     //     );
+//     //     return;
+//     //   } else {
+//     //     console.log("Opening : %s", files[target_index]);
+//     //     device = reader.open(files[target_index]);
+//     //   }
+//     // } else {
+//     //   console.log("No device matching %s found", target_match);
+//     //   return;
+//     // }
+
+//     //We don't check if device is assigned because any code path that does not return should assign it.
+//     device.on("open", function () {
+//       console.log(device.id);
+//     });
+//     const keys =
+//       "X^1234567890XXXXqwertzuiopXXXXasdfghjklXXXXXyxcvbnmXXXXXXXXXXXXXXXXXXXXXXX";
+//     // reader.on("EV_KEY", (event) => {
+//     //   if (event.value == 1){
+//     //     console.log(event);
+//     //     console.log(keys[event.code]);
+//     //   }
+//     // });
+
+//     type MyEvent = {
+//       type: number;
+//       code: number;
+//       value: string | number;
+//       time: string;
+//     };
+//     let currStr = "";
+//     reader.on("event", (event: MyEvent) => {
+//       //console.log(event);
+//       if (event.type == 1 && event.value == 1) {
+//         console.log(event);
+//         console.log(keys[event.code]);
+//         if (event.code != 28) {
+//           currStr += keys[event.code];
+//         } else {
+//           console.log("Here is the string we got!", currStr);
+//           currStr = "";
+//         }
+//       }
+//     });
+
+//     //   while key != 'KEY_ENTER':
+//     //           r, w, x = select([self.dev], [], [])
+//     //           for event in self.dev.read():
+//     //               if event.type == 1 and event.value == 1:
+//     //                   stri += self.keys[event.code]
+//     //                   # print( keys[ event.code ] )
+//     //                   key = ecodes.KEY[event.code]
+//     // });
+//   });
+// }
 
 // import { findByIds } from "usb";
 
@@ -127,26 +149,6 @@ reader.search("/dev/input/by-path", "event-kbd", function (err, files) {
 // //let reader = new USBCardReader({ idVendor: 0xffff, idProduct: 0x0035 });
 // let reader = new USBCardReader(options);
 // console.log(reader.getDeviceList(true));
-
-// import { DevInputReader } from "dev-input-reader";
-
-// // use simple events
-// //const reader = new DevInputReader("event0", { retryInterval: 10000 });
-
-// console.log("About to read...");
-// const reader = new DevInputReader(
-//   "/dev/input/by-path/platform-3f980000.usb-usb-0:1.1.3:1.0-event-kbd",
-//   { retryInterval: 10000 }
-// );
-
-// reader
-//   .on("error", console.error)
-//   .on("keydown", (data) => console.log("keyDown:", data))
-//   .on("key", (data) => console.log("key:", data))
-//   .on("error", (data) => console.log("an error occure:", data));
-// // data contain the durration of the press and the concurently press key
-// // in case oh hardware lost, will reconnect every retryInterval 10sec
-// console.log("Reader created. Listening (I Think)");
 
 /*
 function rawParse(){
