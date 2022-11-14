@@ -18,8 +18,26 @@ type DeviceEvents = {
 
 const is64Bit = os.arch().indexOf("64") >= 0;
 
-export class CardReader extends (EventEmitter as new () => TypedEmitter<DeviceEvents>) {
+export class EvDevReader extends (EventEmitter as new () => TypedEmitter<DeviceEvents>) {
   protected dataStream: fs.ReadStream;
+
+  constructor(pathToDevice: string) {
+    super();
+
+    this.dataStream = fs.createReadStream(pathToDevice);
+    this.dataStream.on("data", (data: Buffer) => {
+      // TODO: Extract into own function
+      const chunk = is64Bit ? 24 : 16;
+      for (let i = 0, j = data.length; i < j; i += chunk) {
+        const eventSlice = data.slice(i, i + chunk);
+        const event = this.parseEvent(eventSlice);
+        this.emit("event", event);
+      }
+    });
+    this.dataStream.on("error", async (err) => {
+      this.emit("error", err);
+    });
+  }
 
   protected parseEvent(buf: Buffer): DeviceEvent {
     let ev: DeviceEvent = {
@@ -51,42 +69,46 @@ export class CardReader extends (EventEmitter as new () => TypedEmitter<DeviceEv
     ev.value = buf.readInt32LE(offset + 4);
     return ev;
   }
+}
+
+type CardReaderEvents = {
+  error: (error: Error) => void;
+  cardTouch: (cardId: string) => void;
+};
+
+// TODO: I don't think this keymap is special, but I could be wrong. See if there is a better generic mapping of codes to characters somewhere.
+const keyMap =
+  ".^1234567890....qwertzuiop....asdfghjkl.....yxcvbnm.......................";
+const CODE_ENTER = 28;
+
+// TODO: Allow for selection of device by NAME
+export class CardReader extends (EventEmitter as new () => TypedEmitter<CardReaderEvents>) {
+  private device: EvDevReader;
+  private stringBeingBuilt: string = "";
 
   constructor(pathToDevice: string) {
     super();
 
-    this.dataStream = fs.createReadStream(pathToDevice);
-    this.dataStream.on("data", (data: Buffer) => {
-      const chunk = is64Bit ? 24 : 16;
-      for (let i = 0, j = data.length; i < j; i += chunk) {
-        const eventSlice = data.slice(i, i + chunk);
-        const event = this.parseEvent(eventSlice);
-        this.emit("event", event);
-      }
-    });
-    this.dataStream.on("error", async (err) => {
-      this.emit("error", err);
-      // if (this.options.retryInterval) {
-      //   await delay_1.default(this.options.retryInterval);
-      //   this.data = null;
-      //   this.startLoop();
-      // }
-    });
+    this.device = new EvDevReader(pathToDevice);
+    this.device.on("event", this.handleEvent.bind(this));
+    this.device.on("error", this.handleError.bind(this));
+  }
 
-    //     // Other code:
-    // else if (this.devType === "js")
-    //   this.data.on("data", (data) => {
-    //     console.log("js", data);
-    //     let event = this.parseJoystick(data);
-    //     if (event) {
-    //       this.emit("joystick", event);
-    //     }
-    //   });
-    // else if (this.devType === "mouse")
-    //   this.data.on("data", (data) => {
-    //     console.log("mouse", data);
-    //     this.parseMouse(data);
-    //   });
+  protected handleEvent(event: DeviceEvent): void {
+    if (event.type == 1 && event.value == 1) {
+      if (event.code != CODE_ENTER) {
+        const character = keyMap[event.code];
+        this.stringBeingBuilt += character;
+      } else {
+        const stringToEmit = this.stringBeingBuilt;
+        this.stringBeingBuilt = "";
+        this.emit("cardTouch", stringToEmit);
+      }
+    }
+  }
+
+  protected handleError(error: Error): void {
+    this.emit("error", error);
   }
 }
 
