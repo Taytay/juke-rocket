@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import "jsh";
 import path from "path";
 import { CardReader } from "./CardReader";
 import { ConfigReader } from "./config/ConfigReader";
@@ -16,9 +15,7 @@ const reader = new CardReader(cardReaderPath);
 const player: IPlayer = new SptPlayer(deviceName);
 
 let lastTouched: string = "";
-// TODO: Make this toggle playback if you touch the same card twice.
 reader.on("cardTouch", (cardId: string) => {
-  // TODO: Log with timestamp
   console.log(`${new Date().toISOString()}: Card tapped with ID: ${cardId}`);
 
   const cardData = configReader.getCardData(cardId);

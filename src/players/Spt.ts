@@ -1,5 +1,4 @@
 import { IPlayer } from "./IPlayer";
-import "jsh";
 import { syncExecCommand } from "../utils/syncExecCommand";
 
 export class SptPlayer implements IPlayer {
