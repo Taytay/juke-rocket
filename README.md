@@ -16,8 +16,11 @@ I wrote this to simplify and make it work with Spotify again. This project has a
 4. Configure the spotify Daemon to have the Spotify username and password. Also, ensure that you have a device name configured. We will call it "Jukebox". Then, you can run it from the command line as follows.
 
 `$ ./spotifyd --config-path ./spotifyd.ini`
+Note that it can be helpful to add `--verbose --no-daemon` to the command line for spotifyd so that you can debug it.
 
-Note that it's helpful to add `--verbose --no-daemon` to the command line for spotifyd so that you can debug it.
+To run it on bootup instead, run:
+
+`$ cd ./service-defintions && ./install.sh `
 
 5. Now that spotifyd is running, your Raspberry pi is a Spotify audio device. You can test this by opening Spotify and choosing "Jukebox" from the dropdown list of devices.
 6. Assuming that works, we can test playing a song from the command line using the Spotify TUI:
