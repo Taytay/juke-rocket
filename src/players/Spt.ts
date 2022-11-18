@@ -72,7 +72,12 @@ export class SptPlayer implements IPlayer {
 
   protected runCommand(command: string, params: ReadonlyArray<string>): void {
     //$(command, { echoCommand: true });
-    syncExecCommand(command, params);
+    try{
+      syncExecCommand(command, params);
+    }
+    catch(e){
+      console.error(e);
+    }
   }
 }
 
