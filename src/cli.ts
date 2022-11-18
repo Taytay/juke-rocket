@@ -4,6 +4,7 @@ import { CardReader } from "./CardReader";
 import { ConfigReader } from "./config/ConfigReader";
 import { IPlayer } from "./players/IPlayer";
 import { SptPlayer } from "./players/Spt";
+import { syncExecCommand } from "./utils/syncExecCommand";
 
 const configPath = path.resolve("./config.jsonc");
 console.log(`Will read config from: ${configPath}`);
@@ -52,4 +53,5 @@ reader.on("error", (error) => {
   console.log("Error received: ", error);
 });
 
+syncExecCommand(`mpg123`, [`"./sounds/game-start-6104-short.mp3"`]);
 console.log(`Ready! (Listening to ${cardReaderPath})`);
