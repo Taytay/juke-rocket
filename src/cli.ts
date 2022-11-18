@@ -11,10 +11,6 @@ const cardReaderPath = configReader.config.cardReaderPath;
 const deviceName = configReader.config.spotifyDeviceName;
 const reader = new CardReader(cardReaderPath);
 
-// TODO: Make a config setting or remember between runs:
-// Init with volume 100:
-$(`spt playback --volume 100 --device "${deviceName}" `, { echoCommand: true });
-
 // TODO: Make this toggle playback if you touch the same card twice.
 reader.on("cardTouch", (cardId: string) => {
   // TODO: Log with timestamp
