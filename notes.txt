@@ -7,17 +7,7 @@ I didn't love the API though, and there were some simple bugs, like startsWith '
 This repo was also quite handy, and close to what I wanted, but not quite: https://github.com/sdumetz/node-evdev/blob/master/lib/index.js
 In particular, I didn't like how it mapped keys to their enum names, rather than the actual character. It had good parsing capabilities for 32 or 64 bit machines though.
 
-
-
-
-
-
-
-
-
-
-
-
+ 
 
 
 <BEGIN sections from original boilerplate readme that might come in handy later:>
