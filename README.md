@@ -11,18 +11,14 @@ I wrote this to simplify and make it work with Spotify again. This project has a
 ## Installation and usage instructions (WIP)
 
 1. Install Node
-2. Install [Spotify Daemon](https://github.com/Spotifyd/spotifyd)
-3. Install [Spotify TUI](https://github.com/Rigellute/spotify-tui#spotify-tui)
-4. Configure the spotify Daemon to have the Spotify username and password. Also, ensure that you have a device name configured. We will call it "Jukebox". Then, you can run it from the command line as follows.
+2. Install [Spotify TUI](https://github.com/Rigellute/spotify-tui#spotify-tui)
+3. Install [Spotify Daemon](https://github.com/Spotifyd/spotifyd) to `/home/pi/spotifyd`
+4. Create a spotifyd.ini file in `/home/pi/spotifyd` and configure the spotify Daemon to have the Spotify username and password. Also, ensure that you have a device name configured. We will call it "Jukebox". Then, you can run it from the command line as follows.
 
 `$ ./spotifyd --config-path ./spotifyd.ini`
 Note that it can be helpful to add `--verbose --no-daemon` to the command line for spotifyd so that you can debug it.
 
-To run it on bootup instead, run:
-
-`$ cd ./service-defintions && ./install.sh `
-
-5. Now that spotifyd is running, your Raspberry pi is a Spotify audio device. You can test this by opening Spotify and choosing "Jukebox" from the dropdown list of devices.
+5. Now that spotifyd is running, your Raspberry pi is a Spotify audio device. You can test this by opening Spotify on your phone and choosing "Jukebox" from the dropdown list of devices.
 6. Assuming that works, we can test playing a song from the command line using the Spotify TUI:
 
 `$ spt play --name "Twinkle Twinkle Little Star" --track --device "Jukebox"`
@@ -32,7 +28,11 @@ And to toggle play/pause:
 `$ spt toggle --status --device "Jukebox"`
 
 7. Now that that's working, let's make it work with RFIDs. Plug in the RFID reader if you haven't already.
-8. `$ yarn run cli` will start the app. Tapping an RFID card to the reader will look up the song or action and run it by calling the appropriate `spt` command.
+8. `$ yarn run start` will start the app. Tapping an RFID card to the reader will look up the song or action and run it by calling the appropriate `spt` command.
+
+9. Running everything on bootup:
+   9.a : `$ yarn run build && cd ./service-defintions && ./install-services.sh `
+   9.b : Reboot and observe
 
 ### Acknowledgements
 
