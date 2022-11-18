@@ -1,0 +1,18 @@
+[Unit]
+Description=JukeRocket Daemon
+Documentation=https://github.com/taytay/juke-rocket
+Wants=sound.target
+After=sound.target
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+# Note that this should match your juke-rocket install directory:
+WorkingDirectory=/home/pi/juke-rocket/
+ExecStart=/home/pi/juke-rocket/start.sh
+User=pi
+Restart=always
+RestartSec=12
+
+[Install]
+WantedBy=default.target
