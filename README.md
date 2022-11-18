@@ -5,7 +5,7 @@ With a Raspberry Pi (3B+ and up), and an [RFID cardreader](https://www.amazon.co
 ## Origin
 
 I originally used [PhonieBox](http://phoniebox.de/index-en.html) to build my son a simple Raspberry Pi-based "Jukebox".
-This worked pretty well, but lost support for Spotify back in May of 2022.
+This worked pretty well, but [lost support for Spotify](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/1815).
 I wrote this to simplify and make it work with Spotify again. This project has about 2% of the functionality of Phoniebox, but it's the 2% I need: Tap an RFID card and play a song on Spotify.
 
 ## Installation and usage instructions (WIP)
@@ -27,15 +27,21 @@ And to get the current playback status:
 And to toggle play/pause:
 `$ spt toggle --status --device "Jukebox"`
 
-7. Now that that's working, let's make it work with RFIDs. Plug in the RFID reader if you haven't already.
-8. `$ yarn run start` will start the app. Tapping an RFID card to the reader will look up the song or action and run it by calling the appropriate `spt` command.
-
-9. Running everything on bootup:
-   9.a : `$ yarn run build && cd ./service-defintions && ./install-services.sh `
-   9.b : Reboot and observe
+7. Now that that's working, let's get juke-rocket working. Copy config-example.jsonc to config.jsonc, and edit it as appropriate. You might not know what card IDs to use just yet for each of your RFID cards, but those will be displayed in the next step.
+8. Now that that's working, let's make it work with RFIDs. Plug in the RFID reader if you haven't already.
+9. `$ yarn run start` will start the juke-rocket. Tapping an RFID card to the reader will print the ID of the card and tell you whether juke-rocket recognizes the card. The card ID it prints out is the card ID you should add to the `cards` section of the config file.
+   (After editing your config file, you'll have to restart juke-rocket. (CTRL-C and `yarn run start`)).
+10. Running everything on bootup:
+    `$ yarn run build && cd ./service-defintions && ./install-services.sh `
+    `$ cd ./service-definitions && start-jukerocket-service.sh` should start the service. (You'll hear the startup sound).
+    To see its output when running as a service, run: `$ journalctl -u jukerocketd --follow`
+11. With the services installed, reboot and you should hear the startup sound. Tap a card and listen to it play back. Tap it again to pause.
 
 ### Acknowledgements
 
 Thanks go to the following projects that inspired or helped me develop this work.
 
-The initial repo was copied from the [Typescript Boilerplate](https://github.com/metachris/typescript-boilerplate) project.
+[PhonieBox](http://phoniebox.de/index-en.html) was the original inspiration for this project.
+The initial repo was copied from [Typescript Boilerplate](https://github.com/metachris/typescript-boilerplate).
+
+More detailed acknowledgement and notes can be found in notes.txt
