@@ -5,6 +5,7 @@
 /docs/
 .idea/*
 
+config.jsonc
 .DS_Store
 coverage
 *.log
